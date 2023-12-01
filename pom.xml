@@ -15,6 +15,7 @@
         <module>gulimall-order</module>
         <module>gulimall-member</module>
         <module>gulimalll-coupon</module>
+        <module>renren-fast</module>
     </modules>
 
 </project>
