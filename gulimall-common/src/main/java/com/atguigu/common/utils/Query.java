@@ -6,7 +6,7 @@
  * 版权所有，侵权必究！
  */
 
-package com.aiguigu.common.utils;
+package com.atguigu.common.utils;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
