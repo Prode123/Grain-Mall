@@ -13,7 +13,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>gulimall-order</name>
-    <description>gulimall-order</description>
+    <description>gulimall-order订单系统</description>
     <properties>
         <java.version>1.8</java.version>
         <spring-cloud.version>2020.0.6</spring-cloud.version>
