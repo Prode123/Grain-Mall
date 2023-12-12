@@ -1,0 +1,28 @@
+spring:
+#  application:
+#    name: gulimall-member
+#  cloud:
+#    nacos:
+#      server-addr: 124.71.214.64:8848
+#      username: nacos
+#      password: batman
+#      discovery:
+#        enable: true
+#        namespace: 16953a03-8336-48e0-a38f-1602a5cac94f
+
+  datasource:
+    username: root
+    password: 123456
+    url: jdbc:mysql://127.0.0.1:3306/gulimall_ums
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+
+
+mybatis-plus:
+  mapper-locations: classpath:/mapper/**/*.xml
+  global-config:
+    db-config:
+      id-type: auto
+
+server:
+  port: 8000

@@ -31,6 +31,18 @@ public class CouponController {
     private CouponService couponService;
 
     /**
+     * @Description  远程调用测试
+     * @Author LiTong(Prode)
+     * @Date 2023/12/12 19:42
+     **/
+    @RequestMapping("/member/list")
+    public R membercoupons(){
+        CouponEntity couponEntity = new CouponEntity();
+        couponEntity.setCouponName("满100减90");
+        return R.ok().put("coupons",couponEntity);
+    }
+
+    /**
      * 列表
      */
     @RequestMapping("/list")
