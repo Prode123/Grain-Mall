@@ -1,20 +1,25 @@
 spring:
-#  application:
-#    name: gulimall-member
-#  cloud:
-#    nacos:
-#      server-addr: 124.71.214.64:8848
-#      username: nacos
-#      password: batman
-#      discovery:
-#        enable: true
-#        namespace: 16953a03-8336-48e0-a38f-1602a5cac94f
-
   datasource:
     username: root
     password: 123456
     url: jdbc:mysql://127.0.0.1:3306/gulimall_ums
     driver-class-name: com.mysql.cj.jdbc.Driver
+  cloud:
+      nacos:
+        config:
+          namespace: 16953a03-8336-48e0-a38f-1602a5cac94f
+          group: DEFAULT_GROUP
+          prefix: gulimall-member
+          file-extension: properties
+  profiles:
+    active: guli
+
+#    spring.cloud.nacos.config.namespace=3c433216-dafe-4689-81e7-bc373a10b219
+#    spring.cloud.nacos.config.group=DEFAULT_GROUP
+#    # nacos 配置文件
+#    spring.cloud.nacos.config.prefix=gulimall-coupon
+#    spring.profiles.active=test
+#    spring.cloud.nacos.config.file-extension=properties
 
 
 
