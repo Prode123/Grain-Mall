@@ -74,11 +74,16 @@ public class CategoryController {
 
     /**
      * 删除
+     * @equestBody: 获取请求体 需要发post请求
      */
     @RequestMapping("/delete")
     public R delete(@RequestBody Long[] catIds){
-		categoryService.removeByIds(Arrays.asList(catIds));
 
+        //1.检查当前删除的菜单是否被其他地方引用
+        categoryService.removeMenuByIds(Arrays.asList(catIds));
+
+        //2.删除菜单
+//        categoryService.removeByIds(Arrays.asList(catIds));
         return R.ok();
     }
 
