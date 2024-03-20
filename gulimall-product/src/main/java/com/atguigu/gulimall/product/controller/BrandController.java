@@ -3,18 +3,16 @@ package com.atguigu.gulimall.product.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.atguigu.gulimall.product.entity.BrandEntity;
 import com.atguigu.gulimall.product.service.BrandService;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.common.utils.R;
 
+import javax.validation.Valid;
 
 
 /**
@@ -24,11 +22,15 @@ import com.atguigu.common.utils.R;
  * @email 1002411753@qq.com
  * @date 2023-12-05 10:59:22
  */
+@Slf4j
 @RestController
 @RequestMapping("product/brand")
 public class BrandController {
     @Autowired
     private BrandService brandService;
+
+
+
 
     /**
      * 列表
@@ -54,8 +56,13 @@ public class BrandController {
     /**
      * 保存
      */
-    @RequestMapping("/save")
-    public R save(@RequestBody BrandEntity brand){
+    @PostMapping("/save")
+    public R save(@Valid @RequestBody BrandEntity brand){
+
+//        BrandController log;
+//        log.info()
+        log.info("品牌保存信息：{}", brand);
+        log.info("品牌保存信息：{}", brand.getName());
 		brandService.save(brand);
 
         return R.ok();
