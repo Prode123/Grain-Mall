@@ -58,27 +58,36 @@ public class BrandController {
     /**
      * 保存
      */
+//    @PostMapping("/save")
+//    public R save(@Valid @RequestBody BrandEntity brand, BindingResult result){
+//
+////        log.info("品牌保存信息：{}", brand);
+////        log.info("品牌保存信息：{}", brand.getName());
+//        if (result.hasErrors()){
+//            Map<String, Object> map = new HashMap<>();
+//            result.getFieldErrors().forEach(item->{
+//                // 获取错误提示信息
+//                String message = item.getDefaultMessage();
+//                // 获取错误的字段名字
+//                String field = item.getField();
+//                map.put(field,message);
+//            });
+//           return R.error(400,"提交的数据不合法").put("data",map);
+//        }
+//
+//        brandService.save(brand);
+//
+//        return R.ok();
+//    }
     @PostMapping("/save")
-    public R save(@Valid @RequestBody BrandEntity brand, BindingResult result){
+    public R save(@Valid @RequestBody BrandEntity brand){
 
-//        log.info("品牌保存信息：{}", brand);
-//        log.info("品牌保存信息：{}", brand.getName());
-        if (result.hasErrors()){
-            Map<String, Object> map = new HashMap<>();
-            result.getFieldErrors().forEach(item->{
-                // 获取错误提示信息
-                String message = item.getDefaultMessage();
-                // 获取错误的字段名字
-                String field = item.getField();
-                map.put(field,message);
-            });
-           return R.error(400,"提交的数据不合法").put("data",map);
-        }
 
         brandService.save(brand);
 
         return R.ok();
     }
+
 
     /**
      * 修改
