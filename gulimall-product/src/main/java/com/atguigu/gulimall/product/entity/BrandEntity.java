@@ -1,5 +1,6 @@
 package com.atguigu.gulimall.product.entity;
 
+import com.atguigu.common.validator.ListValue;
 import com.atguigu.common.validator.group.AddGroup;
 import com.atguigu.common.validator.group.UpdateGroup;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -67,6 +68,8 @@ public class BrandEntity  {
 	/**
 	 * 显示状态[0-不显示；1-显示]
 	 */
+//	@ListValue(vals = {0,1},message = "显示状态[0-不显示；1-显示]必须是0或1",groups = AddGroup.class)
+	@ListValue(vals = {0,1},groups = AddGroup.class)
 	@NotNull(message = "显示状态[0-不显示；1-显示]不能为空")
 	private Integer showStatus;
 	/**
