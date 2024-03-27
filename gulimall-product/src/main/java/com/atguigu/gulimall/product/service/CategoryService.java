@@ -30,5 +30,7 @@ public interface CategoryService extends IService<CategoryEntity> {
      * @Date 2024/03/27 21:12
      **/
     Long[] findCatelogPath(Long catelogId);
+
+    void updateCascade(CategoryEntity category);
 }
 
