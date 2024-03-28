@@ -6,11 +6,7 @@ import java.util.Map;
 
 import com.atguigu.gulimall.product.vo.AttrVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.atguigu.gulimall.product.entity.AttrEntity;
 import com.atguigu.gulimall.product.service.AttrService;
@@ -32,6 +28,14 @@ public class AttrController {
     @Autowired
     private AttrService attrService;
 
+    @GetMapping("/base/list/{catelogId}")
+    public R baseAttrList(@RequestParam Map<String, Object> params,
+                          @PathVariable("catelogId") Long catelogId){
+
+        PageUtils page = attrService.queryBaseAttrPage(params,catelogId);
+        return R.ok().put("page", page);
+    }
+
     /**
      * 列表
      */
@@ -48,7 +52,7 @@ public class AttrController {
      */
     @RequestMapping("/info/{attrId}")
     public R info(@PathVariable("attrId") Long attrId){
-		AttrEntity attr = attrService.getById(attrId);
+        AttrEntity attr = attrService.getById(attrId);
 
         return R.ok().put("attr", attr);
     }
@@ -58,7 +62,7 @@ public class AttrController {
      */
     @RequestMapping("/save")
     public R save(@RequestBody AttrVo attrvo){
-		attrService.saveAttr(attrvo);
+        attrService.saveAttr(attrvo);
 
         return R.ok();
     }
@@ -68,7 +72,7 @@ public class AttrController {
      */
     @RequestMapping("/update")
     public R update(@RequestBody AttrEntity attr){
-		attrService.updateById(attr);
+        attrService.updateById(attr);
 
         return R.ok();
     }
@@ -78,7 +82,7 @@ public class AttrController {
      */
     @RequestMapping("/delete")
     public R delete(@RequestBody Long[] attrIds){
-		attrService.removeByIds(Arrays.asList(attrIds));
+        attrService.removeByIds(Arrays.asList(attrIds));
 
         return R.ok();
     }
