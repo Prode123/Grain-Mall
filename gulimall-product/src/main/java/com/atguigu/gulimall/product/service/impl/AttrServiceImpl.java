@@ -107,7 +107,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
             if ("base".equalsIgnoreCase(attrType)) {
                 AttrAttrgroupRelationEntity attrId = relationDao.selectOne(new QueryWrapper<AttrAttrgroupRelationEntity>().
                         eq("attr_id", attrEntity.getAttrId()));
-                if (attrId != null) {
+                if (attrId != null && attrId.getAttrGroupId() != null) {
                     attrRespVo.setGroupName(attrGroupDao.selectById(attrId.getAttrGroupId()).getAttrGroupName());
                 }
             }
