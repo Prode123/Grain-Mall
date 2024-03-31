@@ -16,6 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -174,6 +175,31 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
             }
         }
 
+
+    }
+
+    /**
+     * @Description 根据分组id找到关联的所有基本属性
+     * @param attrgroupId
+     * @return java.util.List<com.atguigu.gulimall.product.entity.AttrEntity>
+     * @Author LiTong(Prode)
+     * @Date 2024/03/31 22:26
+     **/
+    @Override
+    public List<AttrEntity> getRealationAttr(Long attrgroupId) {
+
+        List<AttrAttrgroupRelationEntity> entities = relationDao.selectList(new QueryWrapper<AttrAttrgroupRelationEntity>().
+                eq("attr_group_id", attrgroupId));
+        List<Long> attrIds = entities.stream().map((attr) -> {
+            return attr.getAttrId();
+        }).collect(Collectors.toList());
+
+        if (attrIds.size() == 0) {
+            return null;
+        }
+
+        Collection<AttrEntity> attrEntities = this.listByIds(attrIds);
+        return (List<AttrEntity>) attrEntities;
 
     }
 
