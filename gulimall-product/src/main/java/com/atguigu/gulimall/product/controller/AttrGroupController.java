@@ -1,15 +1,14 @@
 package com.atguigu.gulimall.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import com.atguigu.gulimall.product.entity.AttrEntity;
+import com.atguigu.gulimall.product.service.AttrService;
 import com.atguigu.gulimall.product.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.atguigu.gulimall.product.entity.AttrGroupEntity;
 import com.atguigu.gulimall.product.service.AttrGroupService;
@@ -28,10 +27,22 @@ import com.atguigu.common.utils.R;
 @RestController
 @RequestMapping("product/attrgroup")
 public class AttrGroupController {
+
     @Autowired
     private AttrGroupService attrGroupService;
+
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    AttrService attrService;
+
+    @GetMapping("/{attrgroupId}/attr/relation")
+    public R attrRelation(@PathVariable("attrgroupId") Long attrgroupId){
+      List<AttrEntity> attrs = attrService.getRealationAttr(attrgroupId);
+
+      return R.ok().put("data", attrs);
+    }
 
     /**
      * 列表
