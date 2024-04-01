@@ -7,7 +7,6 @@ spring:
   cloud:
       nacos:
         config:
-          namespace: 16953a03-8336-48e0-a38f-1602a5cac94f
           group: DEFAULT_GROUP
           prefix: gulimall-member
           file-extension: properties
