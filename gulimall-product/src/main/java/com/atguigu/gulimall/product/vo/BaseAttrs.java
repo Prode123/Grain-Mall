@@ -11,7 +11,7 @@ import lombok.Data;
 public class BaseAttrs {
 
     private Long attrId;
-    private Integer attrValues;
-    private Integer showDesc;
+    private String attrValues;
+    private int showDesc;
 
 }

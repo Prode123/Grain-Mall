@@ -14,16 +14,16 @@ import java.util.List;
 public class Skus {
     private List<Attr> attr;
     private String skuName;
-    private String price;
+    private BigDecimal price;
     private String skuTitle;
     private String skuSubtitle;
     private List<Images> images;
     private List<String> descar;
     private int fullCount;
-    private double discount;
+    private BigDecimal discount;
     private int countStatus;
-    private int fullPrice;
-    private int reducePrice;
+    private BigDecimal fullPrice;
+    private BigDecimal reducePrice;
     private int priceStatus;
     private List<MemberPrice> memberPrice;
 
