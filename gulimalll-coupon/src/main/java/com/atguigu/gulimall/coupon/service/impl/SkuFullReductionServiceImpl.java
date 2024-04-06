@@ -65,7 +65,9 @@ public class SkuFullReductionServiceImpl extends ServiceImpl<SkuFullReductionDao
         // 2.保存满减信息 sms_sku_full_reduction
         SkuFullReductionEntity skuFullReductionEntity = new SkuFullReductionEntity();
         BeanUtils.copyProperties(skuReductionTo,skuFullReductionEntity);
-        this.save(skuFullReductionEntity);
+        if (skuReductionTo.getFullPrice().compareTo(new BigDecimal("0")) > 0) {
+            this.save(skuFullReductionEntity);
+        }
 
         // 3.保存会员价格 sms_member_price
         List<MemberPrice> memberPrice = skuReductionTo.getMemberPrice();
@@ -77,6 +79,8 @@ public class SkuFullReductionServiceImpl extends ServiceImpl<SkuFullReductionDao
             memberPriceEntity.setMemberPrice(item.getPrice());
             memberPriceEntity.setAddOther(1);
             return memberPriceEntity;
+        }).filter(item -> {
+            return item.getMemberPrice().compareTo(new BigDecimal("0")) > 0;
         }).collect(Collectors.toList());
         memberPriceService.saveBatch(collect);
 
