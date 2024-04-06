@@ -26,6 +26,7 @@ import com.atguigu.common.utils.Query;
 
 import com.atguigu.gulimall.product.dao.SpuInfoDao;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 
 
 @Service("spuInfoService")
@@ -185,6 +186,33 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     @Override
     public void saveBaseSpuInfo(SpuInfoEntity spuInfoEntity) {
         this.baseMapper.insert(spuInfoEntity);
+    }
+
+    @Override
+    public PageUtils queryPageByCondition(Map<String, Object> params) {
+
+        QueryWrapper<SpuInfoEntity> wrapper = new QueryWrapper<>();
+        if (params.get("key") != null)  {
+            wrapper.and((obj)->{
+                obj.eq("id",params.get("key")).or().like("spu_name",params.get("key"));
+            });
+        }
+        if (params.get("status") != null)  {
+            wrapper.eq("publish_status",params.get("status"));
+        }
+        if (params.get("brandId") != null)  {
+            wrapper.eq("brand_id",params.get("brandId"));
+        }
+        if (params.get("catelogId") != null)  {
+            wrapper.eq("catalog_id",params.get("catelogId"));
+        }
+        IPage<SpuInfoEntity> page = this.page(
+                new Query<SpuInfoEntity>().getPage(params),wrapper
+
+        );
+
+        return new PageUtils(page);
+
     }
 
 
