@@ -192,23 +192,28 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     public PageUtils queryPageByCondition(Map<String, Object> params) {
 
         QueryWrapper<SpuInfoEntity> wrapper = new QueryWrapper<>();
-        if (params.get("key") != null)  {
-            wrapper.and((obj)->{
-                obj.eq("id",params.get("key")).or().like("spu_name",params.get("key"));
+
+        String key = (String) params.get("key");
+        if (StringUtils.isNotEmpty(key)) {
+            wrapper.and((obj) -> {
+                obj.eq("id", key).or().like("spu_name", key);
             });
         }
-        if (params.get("status") != null)  {
-            wrapper.eq("publish_status",params.get("status"));
+        String status = (String) params.get("status");
+        if (StringUtils.isNotEmpty(status)) {
+            wrapper.eq("publish_status", status);
         }
-        if (params.get("brandId") != null)  {
-            wrapper.eq("brand_id",params.get("brandId"));
+        String brandId = (String) params.get("brandId");
+        if (StringUtils.isNotEmpty(brandId) && !"0".equalsIgnoreCase(brandId)) {
+            wrapper.eq("brand_id", brandId);
         }
-        if (params.get("catelogId") != null)  {
-            wrapper.eq("catalog_id",params.get("catelogId"));
+        String catelogId = (String) params.get("catelogId");
+        if (StringUtils.isNotEmpty(catelogId) && !"0".equalsIgnoreCase(catelogId)) {
+            wrapper.eq("catalog_id", catelogId);
         }
+
         IPage<SpuInfoEntity> page = this.page(
                 new Query<SpuInfoEntity>().getPage(params),wrapper
-
         );
 
         return new PageUtils(page);
