@@ -1,6 +1,8 @@
 package com.atguigu.gulimall.ware.controller;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import com.atguigu.gulimall.ware.vo.MergeVo;
@@ -27,6 +29,16 @@ public class PurchaseController {
     @Autowired
     private PurchaseService purchaseService;
 
+    /**
+     * @Description  领取采购单
+     * @Author LiTong(Prode)
+     * @Date 2024/04/07 21:53
+     **/
+    @PostMapping("/received")
+    public R received(@RequestBody List<Long> ids){
+        purchaseService.received(ids);
+        return R.ok();
+    }
 
     ///ware/purchase/unreceive/list
     @GetMapping("/unreceive/list")
