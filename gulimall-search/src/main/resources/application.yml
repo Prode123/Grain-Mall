@@ -1,0 +1,6 @@
+server:
+  port: 8888
+es:
+  hostname: 123.56.181.42
+  port: 9200
+  scheme: http
