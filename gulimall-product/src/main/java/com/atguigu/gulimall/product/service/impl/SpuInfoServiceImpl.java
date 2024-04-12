@@ -2,6 +2,7 @@ package com.atguigu.gulimall.product.service.impl;
 
 import com.atguigu.common.to.SkuReductionTo;
 import com.atguigu.common.to.SpuBoundTo;
+import com.atguigu.common.to.es.SkuEsModel;
 import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.product.entity.*;
 import com.atguigu.gulimall.product.feign.CouponFeignService;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -34,27 +36,24 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
 
     @Autowired
     SpuInfoDescService spuInfoDescService;
-
     @Autowired
     SpuImagesService spuImagesService;
-
     @Autowired
     AttrService attrService;
-
     @Autowired
     ProductAttrValueService productAttrValueService;
-
     @Autowired
     SkuInfoService skuInfoService;
-
     @Autowired
     SkuImagesService skuImagesService;
-
     @Autowired
     SkuSaleAttrValueService skuSaleAttrValueService;
-
     @Autowired
     CouponFeignService couponFeignService;
+    @Autowired
+    BrandService brandService;
+    @Autowired
+    CategoryService categoryService;
 
 
     @Override
@@ -217,6 +216,37 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         );
 
         return new PageUtils(page);
+
+    }
+
+    @Override
+    public void up(Long spuId) {
+        //查出当前spuId对应的所有sku信息，品牌的名字，图片，价格，标题，库存
+        List<SkuInfoEntity> skus = skuInfoService.getSkuInfoBySpuId(spuId);
+        //封装每个sku的信息
+        List<SkuEsModel> uoProducts = skus.stream().map(sku -> {
+            //组装需要的数据
+            SkuEsModel esModel = new SkuEsModel();
+            BeanUtils.copyProperties(sku, esModel);
+            esModel.setSkuPrice(sku.getPrice());
+            esModel.setSkuImg(sku.getSkuDefaultImg());
+            //设置库存
+            esModel.setHasStock(sku.getSaleCount() > 0 ? true : false);
+            //设置热度评分
+            esModel.setHotScore(0L);
+            //设置品牌信息
+            BrandEntity brand = brandService.getById(esModel.getBrandId());
+            esModel.setBrandName(brand.getName());
+            esModel.setBrandImg(brand.getLogo());
+
+            CategoryEntity category = categoryService.getById(esModel.getCatalogId());
+            esModel.setCatalogName(category.getName());
+            //查询当前sku的所有可以被检索的属性
+
+            return esModel;
+        }).collect(Collectors.toList());
+
+        // 将数据发送到es进行保存
 
     }
 
