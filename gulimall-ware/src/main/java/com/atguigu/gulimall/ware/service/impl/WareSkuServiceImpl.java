@@ -1,7 +1,9 @@
 package com.atguigu.gulimall.ware.service.impl;
 
+import com.atguigu.common.to.SkuHasStockTo;
 import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.ware.feign.ProductFeignService;
+import com.atguigu.gulimall.ware.vo.SkuHasStockVo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,6 +11,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -76,6 +80,20 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
             wareSkuDao.addStock(skuId, wareId, skuNum);
         }
 //        wareSkuDao.addStock(skuId, wareId, skuNum);
+    }
+
+    @Override
+    public List<SkuHasStockTo> getSkuHasStock(List<Long> skuIds) {
+        List<SkuHasStockTo> skuHasStockVos = skuIds.stream().map(sukId -> {
+            SkuHasStockTo skuHasStock = new SkuHasStockTo();
+            // 查询当前sku的总库存量
+            // select sum(stock-stock_locked) from wms_ware_sku where sku_id=?
+            Long count = this.baseMapper.getSkuStock(sukId);
+            skuHasStock.setSkuId(sukId);
+            skuHasStock.setHasStock(count != null && count > 0);
+            return skuHasStock;
+        }).collect(Collectors.toList());
+        return skuHasStockVos;
     }
 
 }
