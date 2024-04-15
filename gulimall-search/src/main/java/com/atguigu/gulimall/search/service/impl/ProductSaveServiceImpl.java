@@ -54,7 +54,7 @@ public class ProductSaveServiceImpl implements ProductSaveService {
         }).collect(Collectors.toList());
 
         boolean b = bulk.hasFailures();
-        log.error("商品上架错误,{}", collect);
+        log.info("商品上架成功,{}", collect);
         return b;
     }
 }

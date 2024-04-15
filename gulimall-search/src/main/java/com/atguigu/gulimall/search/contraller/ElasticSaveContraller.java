@@ -36,7 +36,7 @@ public class ElasticSaveContraller {
             log.error("ElasticSaveContraller商品上架错误:{}", e);
             return R.error(BizCodeEnume.PRODUCT_UP_EXCEPTION.getCode(), BizCodeEnume.PRODUCT_UP_EXCEPTION.getMsg());
         }
-        if (!b) {
+        if (b) {
             return R.error(BizCodeEnume.PRODUCT_UP_EXCEPTION.getCode(), BizCodeEnume.PRODUCT_UP_EXCEPTION.getMsg());
         }
         return R.ok();
