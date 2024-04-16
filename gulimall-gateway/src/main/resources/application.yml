@@ -39,6 +39,17 @@ spring:
             - Path=/api/thirdparty/**
           filters:
             - RewritePath=/api/thirdparty/(?<segment>.*),/$\{segment}
+
+        - id: gulimall_host_route
+          uri: lb://gulimall-product
+          predicates:
+            - Host=gulimall.com
+
+        - id: gulimall_host_ip_route
+          uri: lb://gulimall-product
+          predicates:
+            - Host=123.56.181.42
+
 #        - id: admin_route
 #          uri: lb://renren-fast
 #          predicates:
