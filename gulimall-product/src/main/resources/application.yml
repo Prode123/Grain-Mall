@@ -10,6 +10,10 @@ spring:
     cache: false
 #    prefix: classpath:/templates
 #    suffix: .html
+  redis:
+    host: 123.56.181.42
+    port: 6379
+#    password: lock
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
