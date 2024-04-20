@@ -1,7 +1,11 @@
 package com.atguigu.gulimall.product.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.atguigu.gulimall.product.service.CategoryBrandRelationService;
+import com.atguigu.gulimall.product.vo.Category2Vo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -27,9 +31,35 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Autowired
     CategoryDao categoryDao;
-
     @Autowired
     CategoryBrandRelationService categoryBrandRelationService;
+    @Autowired
+    StringRedisTemplate stringRedisTemplate;
+
+    /**
+     * @Description
+     * @Author LiTong(Prode)
+     * @Date 2024/04/20 21:52
+     **/
+    @Override
+    public Map<String, List<Category2Vo>> getCatalogJson() {
+//        //给缓存中放json字符串，拿出缓存中的json字符串，有就是直接返回，没有再查询数据库
+//
+//        //1、加入redis缓存，缓存中存的数据是json字符串
+//        //JSON跨语言，跨平台兼容
+//        String redisValue = stringRedisTemplate.opsForValue().get("catalogJson");
+//        if(!redisValue.isEmpty()){
+//            //缓存中没有，去数据库查询
+//            Map<String, List<Category2Vo>> catalogJsonFromDb = getCatalogJsonFromDb();
+//            String s = JSON.toJSONString(catalogJsonFromDb);
+//            stringRedisTemplate.opsForValue().set("catalogJson",s);
+//            return catalogJsonFromDb;
+//        }
+//        return JSON.parseObject(redisValue,new TypeReference<Map<String, List<Category2Vo>>>(){});
+        return null;
+    }
+
+
 
 
 

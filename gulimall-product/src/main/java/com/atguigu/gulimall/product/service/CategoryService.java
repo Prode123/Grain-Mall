@@ -1,5 +1,6 @@
 package com.atguigu.gulimall.product.service;
 
+import com.atguigu.gulimall.product.vo.Category2Vo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.gulimall.product.entity.CategoryEntity;
@@ -15,6 +16,8 @@ import java.util.Map;
  * @date 2023-12-03 23:14:00
  */
 public interface CategoryService extends IService<CategoryEntity> {
+
+    Map<String, List<Category2Vo>> getCatalogJson();
 
     PageUtils queryPage(Map<String, Object> params);
 

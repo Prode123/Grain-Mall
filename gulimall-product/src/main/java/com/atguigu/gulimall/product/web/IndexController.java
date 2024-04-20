@@ -20,6 +20,8 @@ public class IndexController {
     @Autowired
     CategoryService categoryService;
 
+
+
 //    @GetMapping({"/","index.html"})
 //    public String indexPage(Model model){
 //        //查出所有的一级分类
