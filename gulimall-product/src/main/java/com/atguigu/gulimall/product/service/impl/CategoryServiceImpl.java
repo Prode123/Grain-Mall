@@ -41,8 +41,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      * @Author LiTong(Prode)
      * @Date 2024/04/20 21:52
      **/
-    @Override
-    public Map<String, List<Category2Vo>> getCatalogJson() {
+//    @Override
+//    public Map<String, List<Category2Vo>> getCatalogJson() {
 //        //给缓存中放json字符串，拿出缓存中的json字符串，有就是直接返回，没有再查询数据库
 //
 //        //1、加入redis缓存，缓存中存的数据是json字符串
@@ -56,7 +56,35 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 //            return catalogJsonFromDb;
 //        }
 //        return JSON.parseObject(redisValue,new TypeReference<Map<String, List<Category2Vo>>>(){});
-        return null;
+//        return null;
+//    }
+    @Override
+    public Map<String, List<Category2Vo>> getCatalogJson() {
+        //查出所有一级分类
+        List<CategoryEntity> level1Categorys = getLevel1Categorys();
+        //封装数据
+        Map<String, List<Category2Vo>> parent_id = level1Categorys.stream().collect(Collectors.toMap(k ->
+                k.getCatId().toString(), v -> {
+            List<CategoryEntity> categoryEntities = baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", v.getCatId()));
+            List<Category2Vo> category2Vos = null;
+            if (categoryEntities != null) {
+                category2Vos = categoryEntities.stream().map(l2 -> {
+                    Category2Vo category2Vo = new Category2Vo(v.getCatId().toString(), null, l2.getCatId().toString(), l2.getName());
+                    //找当前二级分类的三级分类封装成vo
+                    List<CategoryEntity> level3Catelog = baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", l2.getCatId()));
+                    if (level3Catelog != null) {
+                        List<Category2Vo.Category3Vo> category3Vos = level3Catelog.stream().map(l3 -> {
+                            Category2Vo.Category3Vo category3Vo = new Category2Vo.Category3Vo(l2.getCatId().toString(), l3.getCatId().toString(), l3.getName());
+                            return category3Vo;
+                        }).collect(Collectors.toList());
+                        category2Vo.setCatalog3List(category3Vos);
+                    }
+                    return category2Vo;
+                }).collect(Collectors.toList());
+            }
+            return category2Vos;
+        }));
+        return parent_id;
     }
 
 
