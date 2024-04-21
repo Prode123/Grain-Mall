@@ -40,6 +40,13 @@ spring:
           filters:
             - RewritePath=/api/thirdparty/(?<segment>.*),/$\{segment}
 
+        - id: product_route
+          uri: lb://gulimall-product
+          predicates:
+            - Path=/api/**
+          filters:
+            - RewritePath=/api/(?<segment>.*),/$\{segment}
+
         - id: gulimall_host_route
           uri: lb://gulimall-product
           predicates:

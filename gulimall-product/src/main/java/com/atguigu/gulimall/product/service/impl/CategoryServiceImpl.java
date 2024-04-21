@@ -4,14 +4,15 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.atguigu.gulimall.product.service.CategoryBrandRelationService;
 import com.atguigu.gulimall.product.vo.Category2Vo;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Service("categoryService")
+@Slf4j
 public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity> implements CategoryService {
 
     @Autowired
@@ -41,25 +43,91 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      * @Author LiTong(Prode)
      * @Date 2024/04/20 21:52
      **/
-//    @Override
-//    public Map<String, List<Category2Vo>> getCatalogJson() {
-//        //给缓存中放json字符串，拿出缓存中的json字符串，有就是直接返回，没有再查询数据库
-//
-//        //1、加入redis缓存，缓存中存的数据是json字符串
-//        //JSON跨语言，跨平台兼容
-//        String redisValue = stringRedisTemplate.opsForValue().get("catalogJson");
-//        if(!redisValue.isEmpty()){
-//            //缓存中没有，去数据库查询
-//            Map<String, List<Category2Vo>> catalogJsonFromDb = getCatalogJsonFromDb();
-//            String s = JSON.toJSONString(catalogJsonFromDb);
-//            stringRedisTemplate.opsForValue().set("catalogJson",s);
-//            return catalogJsonFromDb;
-//        }
-//        return JSON.parseObject(redisValue,new TypeReference<Map<String, List<Category2Vo>>>(){});
-//        return null;
-//    }
     @Override
     public Map<String, List<Category2Vo>> getCatalogJson() {
+        //给缓存中放json字符串，拿出缓存中的json字符串，有就是直接返回，没有再查询数据库
+
+        //1、加入redis缓存，缓存中存的数据是json字符串
+        //JSON跨语言，跨平台兼容
+        String redisValue = stringRedisTemplate.opsForValue().get("catalogJson");
+        if(StringUtils.isEmpty(redisValue)){
+            //缓存中没有，去数据库查询
+            Map<String, List<Category2Vo>> catalogJsonFromDb = getCatalogJsonFromDbWithRedisLock();
+            String s = JSON.toJSONString(catalogJsonFromDb);
+            stringRedisTemplate.opsForValue().set("catalogJson",s,7, TimeUnit.DAYS);
+            return catalogJsonFromDb;
+        }
+        return JSON.parseObject(redisValue,new TypeReference<Map<String, List<Category2Vo>>>(){});
+    }
+
+    public Map<String, List<Category2Vo>> getCatalogJsonFromDbWithRedisLock(){
+
+        //1、占分布式锁，去redis占坑 设置过期时间，必须和加锁是同步的，原子的
+        String uuid = UUID.randomUUID().toString();
+        Boolean lock = stringRedisTemplate.opsForValue().setIfAbsent("lock", uuid, 30, TimeUnit.SECONDS);
+        Map<String, List<Category2Vo>> dataFromDb = null;
+        if (lock){
+            log.info("获取分布式锁成功");
+            System.out.println("获取分布式锁成功");
+            try {
+                dataFromDb = getDataFromDb();
+                //将数据放入缓存，将对象转为json
+                String s = JSON.toJSONString(dataFromDb);
+                stringRedisTemplate.opsForValue().set("catalogJson",s,7, TimeUnit.DAYS);
+            }finally {
+                //释放锁
+//            if (uuid.equals(stringRedisTemplate.opsForValue().get("lock"))){
+//                stringRedisTemplate.delete("lock");
+//            }
+                //使用lua脚本
+                String script = "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end";
+                Long execute = stringRedisTemplate.execute(new DefaultRedisScript<Long>(script, Long.class), Arrays.asList("lock"), uuid);
+            }
+            return dataFromDb;
+        }else {
+            log.info("获取分布式锁失败,等待重试");
+            System.out.println("获取分布式锁失败,等待重试");
+            //占位失败，重试
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return getCatalogJsonFromDbWithRedisLock();
+        }
+    }
+
+    private Map<String, List<Category2Vo>> getDataFromDb() {
+        //查出所有一级分类
+        List<CategoryEntity> level1Categorys = getLevel1Categorys();
+        //封装数据
+        Map<String, List<Category2Vo>> parent_id = level1Categorys.stream().collect(Collectors.toMap(k ->
+                k.getCatId().toString(), v -> {
+            List<CategoryEntity> categoryEntities = baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", v.getCatId()));
+            List<Category2Vo> category2Vos = null;
+            if (categoryEntities != null) {
+                category2Vos = categoryEntities.stream().map(l2 -> {
+                    Category2Vo category2Vo = new Category2Vo(v.getCatId().toString(), null, l2.getCatId().toString(), l2.getName());
+                    //找当前二级分类的三级分类封装成vo
+                    List<CategoryEntity> level3Catelog = baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", l2.getCatId()));
+                    if (level3Catelog != null) {
+                        List<Category2Vo.Category3Vo> category3Vos = level3Catelog.stream().map(l3 -> {
+                            Category2Vo.Category3Vo category3Vo = new Category2Vo.Category3Vo(l2.getCatId().toString(), l3.getCatId().toString(), l3.getName());
+                            return category3Vo;
+                        }).collect(Collectors.toList());
+                        category2Vo.setCatalog3List(category3Vos);
+                    }
+                    return category2Vo;
+                }).collect(Collectors.toList());
+            }
+            return category2Vos;
+        }));
+        //放入缓存
+        stringRedisTemplate.opsForValue().set("catalogJson",JSON.toJSONString(parent_id),7, TimeUnit.DAYS);
+        return parent_id;
+    }
+
+    public Map<String, List<Category2Vo>> getCatalogJsonFromDb(){
         //查出所有一级分类
         List<CategoryEntity> level1Categorys = getLevel1Categorys();
         //封装数据
