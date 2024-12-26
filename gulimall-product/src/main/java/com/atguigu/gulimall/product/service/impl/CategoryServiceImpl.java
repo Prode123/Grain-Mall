@@ -47,6 +47,14 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     public Map<String, List<Category2Vo>> getCatalogJson() {
         //给缓存中放json字符串，拿出缓存中的json字符串，有就是直接返回，没有再查询数据库
 
+        /**
+         *   加入空结果缓存，解决缓存穿透问题
+         *   加入过期时间（加随机值），解决缓存雪崩问题
+         *   加锁，解决缓存击穿问题
+
+         **/
+
+
         //1、加入redis缓存，缓存中存的数据是json字符串
         //JSON跨语言，跨平台兼容
         String redisValue = stringRedisTemplate.opsForValue().get("catalogJson");

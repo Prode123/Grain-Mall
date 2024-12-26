@@ -6,6 +6,7 @@ import com.atguigu.gulimall.product.service.CategoryService;
 import com.baomidou.mybatisplus.extension.service.additional.query.impl.QueryChainWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -28,6 +29,8 @@ class GulimallProductApplicationTests {
     @Autowired
     StringRedisTemplate stringRedisTemplate;
 
+    @Autowired
+    RedissonClient redissonClient;
 
     @Test
     void contextLoads() {
@@ -58,6 +61,11 @@ class GulimallProductApplicationTests {
         Long[] catelogPath = categoryService.findCatelogPath(225L);
 //        System.out.println("完整路径："+catelogPath);
         log.info("完整路径：{}", Arrays.asList(catelogPath));
+    }
+
+    @Test
+    void testRedisson() {
+        System.out.println(redissonClient);
     }
 
 }
