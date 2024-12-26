@@ -98,7 +98,7 @@
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
         </dependency>
-        <!--以后使用 redission作为所有分布式锁，分布式对象等功能框架-->
+        <!--以后使用 redisson作为所有分布式锁，分布式对象等功能框架-->
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson</artifactId>
